@@ -50,6 +50,28 @@ H5PUpgrades['H5P.BranchingScenario'] = (function () {
         parameters.branchingScenario.scoringOptionGroup.includeInteractionsScores = false;
         finished(null, parameters, extras);
       },
+      6: function (parameters, finished, extras) {
+        if (parameters && parameters.branchingScenario && parameters.branchingScenario.content) {
+          parameters.branchingScenario.content.forEach(function (content) {
+            if (!content.type) {
+              return;
+            }
+
+            /*
+             * Version of H5P.CoursePresentation should be 1.22, but the
+             * KID fork should be able to handle others (earliers) as well.
+             * Important: There are no hard dependencies defined, so it must be
+             * ensured that H5P.CoursePresentationKID 1.24 is installed
+             */
+            if (content.type.library && content.type.library.split(' ')[0] === 'H5P.CoursePresentation') {
+              content.type.library = 'H5P.CoursePresentationKID 1.24'
+            }
+          });
+        }
+
+        // Done
+        finished(null, parameters, extras);
+      }
     }
   };
 })();

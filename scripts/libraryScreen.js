@@ -782,7 +782,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
 
     // Exceptions
     if (
-      library === 'H5P.CoursePresentation' &&
+      library === 'H5P.CoursePresentationKID' &&
       instance &&
       (instance.children.length + (instance.isTask ? 1 : 0) === 1) ||
       instance.activeSurface === true
@@ -806,7 +806,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
       return;
     }
     switch (library) {
-      case 'H5P.CoursePresentation':
+      case 'H5P.CoursePresentationKID':
         // Permit progression when final slide has been reached
         instance.on('xAPI', (event) => {
           if (event.data.statement.verb.display['en-US'] === 'progressed') {
@@ -832,7 +832,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
             const answered = instance.interactions
               .filter(interaction => interaction.getProgress() !== undefined);
 
-            // Giving opportunity to submit the answers 
+            // Giving opportunity to submit the answers
             if (instance.hasStar && answered.length > 0) {
               that.parent.enableNavButton();
             }
@@ -1061,7 +1061,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
    */
   LibraryScreen.prototype.disableFullscreen = function (instance) {
     switch (instance.libraryInfo.machineName) {
-      case 'H5P.CoursePresentation':
+      case 'H5P.CoursePresentationKID':
         if (instance.$fullScreenButton) {
           instance.$fullScreenButton.remove();
         }
@@ -1128,7 +1128,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
     const library = self.parent.params.content[self.currentLibraryId];
 
     if (self.libraryFinishingRequirements[self.currentLibraryId] === true
-      && (self.hasValidVideo(library) || library.type.library.split(' ')[0] === 'H5P.CoursePresentation')) {
+      && (self.hasValidVideo(library) || library.type.library.split(' ')[0] === 'H5P.CoursePresentationKID')) {
       self.contentOverlays[self.currentLibraryId].hide();
       self.parent.disableNavButton();
     }
@@ -1294,7 +1294,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
       let showProceedButtonflag = true;
       // First priority - Hide navigation button first to prevent user to make unecessary clicks
       if (this.libraryFinishingRequirements[library.contentId] === true
-        && (this.hasValidVideo(library) || library.type.library.split(' ')[0] === 'H5P.CoursePresentation')) {
+        && (this.hasValidVideo(library) || library.type.library.split(' ')[0] === 'H5P.CoursePresentationKID')) {
         this.contentOverlays[this.currentLibraryId].hide();
         this.parent.disableNavButton();
         showProceedButtonflag = false;
@@ -1502,7 +1502,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
     const element = (e && e.data && e.data.element ? e.data.element : this.currentLibraryElement);
 
     const isImage = (instance && instance.libraryInfo.machineName === 'H5P.Image');
-    const isCP = (instance && instance.libraryInfo.machineName === 'H5P.CoursePresentation');
+    const isCP = (instance && instance.libraryInfo.machineName === 'H5P.CoursePresentationKID');
     const isHotspots = (instance && instance.libraryInfo.machineName === 'H5P.ImageHotspots');
     const isVideo = (instance && instance.libraryInfo.machineName === 'H5P.Video');
     const isIV = (instance && instance.libraryInfo.machineName === 'H5P.InteractiveVideo');
