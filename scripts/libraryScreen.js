@@ -782,7 +782,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
 
     // Exceptions
     if (
-      library === 'H5P.CoursePresentationKID' &&
+      (library === 'H5P.CoursePresentationKID' || library === 'H5P.CoursePresentation') &&
       instance &&
       (instance.children.length + (instance.isTask ? 1 : 0) === 1) ||
       instance.activeSurface === true
@@ -806,6 +806,20 @@ H5P.BranchingScenario.LibraryScreen = (function () {
       return;
     }
     switch (library) {
+      case 'H5P.CoursePresentation':
+        // Permit progression when final slide has been reached
+        instance.on('xAPI', (event) => {
+          if (event.data.statement.verb.display['en-US'] === 'progressed') {
+            const slideProgressedTo = parseInt(event.data.statement.object.definition.extensions['http://id.tincanapi.com/extension/ending-point']);
+            if (slideProgressedTo === instance.children.length + (instance.isTask ? 1 : 0)) {
+              if (this.navButton.classList.contains('h5p-disabled')) {
+                that.parent.enableNavButton(true);
+              }
+            }
+          }
+        });
+        break;
+
       case 'H5P.CoursePresentationKID':
         // Permit progression when final slide has been reached
         instance.on('xAPI', (event) => {
@@ -1061,6 +1075,12 @@ H5P.BranchingScenario.LibraryScreen = (function () {
    */
   LibraryScreen.prototype.disableFullscreen = function (instance) {
     switch (instance.libraryInfo.machineName) {
+      case 'H5P.CoursePresentation':
+        if (instance.$fullScreenButton) {
+          instance.$fullScreenButton.remove();
+        }
+        break;
+
       case 'H5P.CoursePresentationKID':
         if (instance.$fullScreenButton) {
           instance.$fullScreenButton.remove();
@@ -1127,8 +1147,13 @@ H5P.BranchingScenario.LibraryScreen = (function () {
     const self = this;
     const library = self.parent.params.content[self.currentLibraryId];
 
-    if (self.libraryFinishingRequirements[self.currentLibraryId] === true
-      && (self.hasValidVideo(library) || library.type.library.split(' ')[0] === 'H5P.CoursePresentationKID')) {
+    if (self.libraryFinishingRequirements[self.currentLibraryId] === true &&
+      (
+        self.hasValidVideo(library) ||
+        library.type.library.split(' ')[0] === 'H5P.CoursePresentationKID' ||
+        library.type.library.split(' ')[0] === 'H5P.CoursePresentation'
+      )
+    ) {
       self.contentOverlays[self.currentLibraryId].hide();
       self.parent.disableNavButton();
     }
@@ -1293,8 +1318,13 @@ H5P.BranchingScenario.LibraryScreen = (function () {
     if (!LibraryScreen.isBranching(library)) {
       let showProceedButtonflag = true;
       // First priority - Hide navigation button first to prevent user to make unecessary clicks
-      if (this.libraryFinishingRequirements[library.contentId] === true
-        && (this.hasValidVideo(library) || library.type.library.split(' ')[0] === 'H5P.CoursePresentationKID')) {
+      if (this.libraryFinishingRequirements[library.contentId] === true &&
+        (
+          this.hasValidVideo(library) ||
+          library.type.library.split(' ')[0] === 'H5P.CoursePresentationKID' ||
+          library.type.library.split(' ')[0] === 'H5P.CoursePresentation'
+        )
+      ) {
         this.contentOverlays[this.currentLibraryId].hide();
         this.parent.disableNavButton();
         showProceedButtonflag = false;
@@ -1502,7 +1532,7 @@ H5P.BranchingScenario.LibraryScreen = (function () {
     const element = (e && e.data && e.data.element ? e.data.element : this.currentLibraryElement);
 
     const isImage = (instance && instance.libraryInfo.machineName === 'H5P.Image');
-    const isCP = (instance && instance.libraryInfo.machineName === 'H5P.CoursePresentationKID');
+    const isCP = (instance && (instance.libraryInfo.machineName === 'H5P.CoursePresentationKID' || instance.libraryInfo.machineName === 'H5P.CoursePresentation'));
     const isHotspots = (instance && instance.libraryInfo.machineName === 'H5P.ImageHotspots');
     const isVideo = (instance && instance.libraryInfo.machineName === 'H5P.Video');
     const isIV = (instance && instance.libraryInfo.machineName === 'H5P.InteractiveVideo');
